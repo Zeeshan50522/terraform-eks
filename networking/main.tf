@@ -1,6 +1,8 @@
 resource "aws_vpc" "main" {
 
   cidr_block       = var.CIDR
+
+  enable_dns_hostnames = true
   tags = {
     Name = terraform.workspace
   }
@@ -37,4 +39,10 @@ resource "aws_route_table" "public_route_table" {
   tags = {
     Name = terraform.workspace
   }
+}
+
+resource "aws_route_table_association" "route_table_association" {
+  count = length(var.availability_zone)
+  subnet_id      = aws_subnet.public_subnet[count.index].id
+  route_table_id = aws_route_table.public_route_table.id
 }
